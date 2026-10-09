@@ -1,60 +1,775 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Planet Mall</title>
-  <style>
+
+  <link rel="icon" type="image/png"
+        href="/images/OurPlanetMallFav2.png">
+
+  
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 15px 30px;
+    font-family: Arial, sans-serif;
+  }
+
+  /* ORIGINAL LOGO */
+
+  .logo-container {
+    text-align: center;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .logo-container img {
+    width: 480px;
+    max-width: 90%;
+    height: auto;
+    margin-top: -95px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .logo-container img:hover {
+    transform: scale(1.07);
+  }
+
+  /* GOOGLE SEARCH */
+
+  .search-container {
+    width: 100%;
+    max-width: 620px;
+    margin: 10px auto 25px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border-radius: 40px;
+    padding: 5px 10px 5px 20px;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .search-box:focus-within {
+    box-shadow: 0 0 18px rgba(255,255,255,0.25);
+  }
+
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #222;
+    font-size: 16px;
+    padding: 13px 5px;
+    font-family: Arial, sans-serif;
+  }
+
+  .search-box input::placeholder {
+    color: #777;
+  }
+
+  .search-box button {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 50%;
+  }
+
+  .search-box button:hover {
+    background: #eee;
+  }
+
+  /* FAVORITES */
+
+  .favorites-container {
+    width: 100%;
+    max-width: 650px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin: 5px auto 30px;
+  }
+
+  .shortcut {
+    width: 85px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .shortcut-link {
+    text-decoration: none;
+    color: #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .shortcut-icon {
+    width: 56px;
+    height: 56px;
+    background: #222;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease,
+                transform 0.2s ease;
+  }
+
+  .shortcut-link:hover .shortcut-icon {
+    background: #333;
+    transform: scale(1.08);
+  }
+
+  .shortcut-icon img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+
+  .shortcut-name {
+    font-size: 12px;
+    text-align: center;
+    width: 85px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* ADD SHORTCUT */
+
+  .add-shortcut {
+    border: none;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .add-shortcut .shortcut-icon {
+    font-size: 30px;
+    font-weight: 300;
+  }
+
+  .add-shortcut:hover .shortcut-icon {
+    background: #333;
+    transform: scale(1.08);
+  }
+
+  /* DELETE SHORTCUT */
+
+  .delete-shortcut {
+    position: absolute;
+    top: -5px;
+    right: 4px;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: #444;
+    border: 1px solid #666;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .shortcut:hover .delete-shortcut,
+  .delete-shortcut:focus-visible {
+    display: flex;
+  }
+
+  .delete-shortcut:hover {
+    background: #c62828;
+  }
+
+  /* POPUP */
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: #1c1c1c;
+    color: #fff;
+    width: 100%;
+    max-width: 380px;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  .modal h2 {
+    margin: 0 0 25px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .modal label {
+    display: block;
+    color: #bbb;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .modal input {
+    width: 100%;
+    background: #292929;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 7px;
+    padding: 12px;
+    font-size: 15px;
+    margin-bottom: 20px;
+    outline: none;
+  }
+
+  .modal input:focus {
+    border-color: #fff;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .modal-buttons button {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .cancel-button {
+    background: #333;
+    color: white;
+  }
+
+  .save-button {
+    background: white;
+    color: black;
+    font-weight: bold;
+  }
+
+  .save-button:hover {
+    background: #ddd;
+  }
+
+  /* ORIGINAL FOOTER */
+
+  footer {
+    color: #666;
+    font-size: 13px;
+    margin-top: auto;
+    padding-top: 30px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* MOBILE */
+
+  @media (max-width: 600px) {
     body {
-      margin: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
+      padding: 0 12px 25px;
     }
 
     .logo-container {
-      text-align: center;
-      margin-bottom: 10px; /* bring footer closer */
+      height: 340px;
     }
 
     .logo-container img {
-      width: 480px;
-      max-width: 90%;
-      transition: transform 0.3s ease;
-      cursor: pointer;
+      width: 350px;
+      max-width: 100%;
+      margin-top: -80px;
     }
 
-    .logo-container img:hover {
-      transform: scale(1.07);
+    .search-container {
+      margin: 10px auto 25px;
+    }
+
+    .favorites-container {
+      gap: 12px;
+    }
+
+    .shortcut {
+      width: 75px;
+    }
+
+    .shortcut-name {
+      width: 75px;
+    }
+
+    .delete-shortcut {
+      display: flex;
     }
 
     footer {
-      color: #666;
-      font-size: 13px;
-      margin-top: -5px;  /* pulls footer closer to logo */
+      font-size: 11px;
     }
-  </style>
-
-<link rel="icon" type="image/png" href="/images/OurPlanetMallFav2.png">
+  }
+</style>
 
 </head>
+
 <body>
 
+  <!-- ORIGINAL LOGO -->
+
   <div class="logo-container">
-    <img src="images/ourplanetmall.png" alt="Our Planet Mall Logo">
+    <img
+      src="images/ourplanetmall.png"
+      alt="Our Planet Mall Logo"
+    >
   </div>
 
+  <!-- GOOGLE SEARCH -->
+
+  <div class="search-container">
+    <form
+      class="search-box"
+      action="https://www.google.com/search"
+      method="GET"
+      role="search"
+    >
+      <input
+        type="search"
+        name="q"
+        placeholder="Search Google or type a URL"
+        aria-label="Search Google"
+        autocomplete="off"
+        required
+      >
+
+      <button type="submit" aria-label="Search">
+        &#128269;
+      </button>
+    </form>
+  </div>
+
+  <!-- FAVORITES -->
+
+  <div
+    class="favorites-container"
+    id="favoritesContainer"
+  ></div>
+
+  <!-- ADD SHORTCUT POPUP -->
+
+  <div
+    class="modal-overlay"
+    id="shortcutModal"
+  >
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
+      <h2 id="modalTitle">Add shortcut</h2>
+
+      <form id="shortcutForm">
+        <label for="shortcutName">
+          Name
+        </label>
+
+        <input
+          type="text"
+          id="shortcutName"
+          placeholder="Example: YouTube"
+          maxlength="30"
+          required
+        >
+
+        <label for="shortcutURL">
+          URL
+        </label>
+
+        <input
+          type="text"
+          id="shortcutURL"
+          placeholder="https://www.youtube.com"
+          required
+        >
+
+        <div class="modal-buttons">
+          <button
+            type="button"
+            class="cancel-button"
+            id="cancelShortcut"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="save-button"
+          >
+            Done
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ORIGINAL FOOTER -->
+
   <footer>
-    Under Construction 👷🏽‍♂️🏗️ Coming Soon © 2026 · All Rights Reserved · OurPlanetMall Platform & OurPlanetMall Studios
+    © 2026 · All Rights Reserved ·
+    OurPlanetMall Platform & OurPlanetMall Studios
   </footer>
+
+  <script>
+    const STORAGE_KEY = "ourplanetmall_favorites";
+
+    const container =
+      document.getElementById("favoritesContainer");
+
+    const modal =
+      document.getElementById("shortcutModal");
+
+    const form =
+      document.getElementById("shortcutForm");
+
+    const nameInput =
+      document.getElementById("shortcutName");
+
+    const urlInput =
+      document.getElementById("shortcutURL");
+
+    const cancelButton =
+      document.getElementById("cancelShortcut");
+
+    let favorites = [];
+
+    // LOAD SAVED FAVORITES
+
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+      );
+
+      if (Array.isArray(saved)) {
+        favorites = saved.filter(item => {
+          return item &&
+            typeof item.name === "string" &&
+            typeof item.url === "string" &&
+            isSafeURL(item.url);
+        });
+      }
+    } catch (error) {
+      favorites = [];
+    }
+
+    // CHECK SAFE WEBSITE URL
+
+    function isSafeURL(value) {
+      try {
+        const url = new URL(value);
+
+        return (
+          url.protocol === "https:" ||
+          url.protocol === "http:"
+        );
+      } catch {
+        return false;
+      }
+    }
+
+    // NORMALIZE WEBSITE URL
+
+    function normalizeURL(value) {
+      let url = value.trim();
+
+      if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+      }
+
+      const parsed = new URL(url);
+
+      if (!isSafeURL(parsed.href)) {
+        throw new Error("Invalid URL");
+      }
+
+      return parsed.href;
+    }
+
+    // SAVE FAVORITES
+
+    function saveFavorites() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(favorites)
+        );
+      } catch (error) {
+        alert(
+          "Your browser could not save the shortcuts."
+        );
+      }
+    }
+
+    // OPEN POPUP
+
+    function openModal() {
+      modal.classList.add("active");
+      form.reset();
+      nameInput.focus();
+    }
+
+    // CLOSE POPUP
+
+    function closeModal() {
+      modal.classList.remove("active");
+      form.reset();
+    }
+
+    cancelButton.addEventListener(
+      "click",
+      closeModal
+    );
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (
+        event.key === "Escape" &&
+        modal.classList.contains("active")
+      ) {
+        closeModal();
+      }
+    });
+
+    // REMOVE FAVORITE
+
+    function removeFavorite(index) {
+      favorites.splice(index, 1);
+      saveFavorites();
+      renderFavorites();
+    }
+
+    // RENDER FAVORITES
+
+    function renderFavorites() {
+      container.replaceChildren();
+
+      favorites.forEach((favorite, index) => {
+        if (!isSafeURL(favorite.url)) {
+          return;
+        }
+
+        const shortcut =
+          document.createElement("div");
+
+        shortcut.className = "shortcut";
+
+        const link =
+          document.createElement("a");
+
+        link.className = "shortcut-link";
+        link.href = favorite.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.title = favorite.name;
+
+        const icon =
+          document.createElement("div");
+
+        icon.className = "shortcut-icon";
+
+        const image =
+          document.createElement("img");
+
+        const hostname =
+          new URL(favorite.url).hostname;
+
+        image.src =
+          "https://www.google.com/s2/favicons?domain=" +
+          encodeURIComponent(hostname) +
+          "&sz=64";
+
+        image.alt = "";
+
+        image.onerror = () => {
+          image.remove();
+          icon.textContent = "🌐";
+        };
+
+        icon.appendChild(image);
+
+        const label =
+          document.createElement("span");
+
+        label.className = "shortcut-name";
+        label.textContent = favorite.name;
+
+        link.appendChild(icon);
+        link.appendChild(label);
+
+        const deleteButton =
+          document.createElement("button");
+
+        deleteButton.className =
+          "delete-shortcut";
+
+        deleteButton.type = "button";
+        deleteButton.textContent = "×";
+
+        deleteButton.setAttribute(
+          "aria-label",
+          "Delete " + favorite.name
+        );
+
+        deleteButton.addEventListener(
+          "click",
+          () => removeFavorite(index)
+        );
+
+        shortcut.appendChild(link);
+        shortcut.appendChild(deleteButton);
+
+        container.appendChild(shortcut);
+      });
+
+      // ADD SHORTCUT BUTTON
+
+      const addWrapper =
+        document.createElement("div");
+
+      addWrapper.className = "shortcut";
+
+      const addButton =
+        document.createElement("button");
+
+      addButton.type = "button";
+      addButton.className = "add-shortcut";
+
+      const plusIcon =
+        document.createElement("span");
+
+      plusIcon.className = "shortcut-icon";
+      plusIcon.textContent = "+";
+
+      const plusLabel =
+        document.createElement("span");
+
+      plusLabel.className = "shortcut-name";
+      plusLabel.textContent = "Add Shortcut";
+
+      addButton.appendChild(plusIcon);
+      addButton.appendChild(plusLabel);
+
+      addButton.addEventListener(
+        "click",
+        openModal
+      );
+
+      addWrapper.appendChild(addButton);
+      container.appendChild(addWrapper);
+    }
+
+    // ADD NEW FAVORITE
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const name = nameInput.value.trim();
+      const rawURL = urlInput.value.trim();
+
+      if (!name || !rawURL) {
+        return;
+      }
+
+      let url;
+
+      try {
+        url = normalizeURL(rawURL);
+      } catch {
+        alert(
+          "Please enter a valid website URL."
+        );
+        return;
+      }
+
+      favorites.push({
+        name: name,
+        url: url
+      });
+
+      saveFavorites();
+      renderFavorites();
+      closeModal();
+    });
+
+    // INITIALIZE
+
+    renderFavorites();
+  </script>
 
 </body>
 </html>
+
 
 
 
